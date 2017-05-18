@@ -1,12 +1,12 @@
 # Alert when the rate of events exceeds a threshold
 
-es_host: data-elasticsearch-logging-staging.service.sntc01.ecsops.com
+es_host: elasticsearch.example.com
 es_port: 9200
 
 
 # (Required)
 # Rule name, must be unique
-name: LargePartition
+name: Cassandra Compacted Large Partition
 
 # (Required)
 # Type of alert.
@@ -15,7 +15,7 @@ type: frequency
 
 # (Required)
 # Index to search, wildcard supported
-index: staging-cassandra-*
+index: cassandra-*
 
 use_strftime_index: true
 
@@ -28,16 +28,26 @@ num_events: 1
 timeframe:
   minutes: 1
 
+# This option allows you to ignore repeating alerts for a period of time.
+realert:
+  minutes: 0
+
 # (Required)
 # A list of Elasticsearch filters used for find events
 # These filters are joined with AND and nested in a filtered query
 # For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
 - query_string:
-    query: "message: large partition AND level: INFO"
+    query: '("Writing large partition" OR "Compacting large partition") AND (level: WARN OR level: ERROR)'
 
 # (Required)
 # The alert is use when a match is found
 alert:
 - "slack":
     slack_webhook_url: "https://hooks.slack.com/services/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"
+alert_text_type: alert_text_only
+alert_text: "_*Cassandra just compacted a large partition.*_\n_Host:_ _`{0}`_\n_Timestamp:_ _`{1}`_\n_Message:_ _`{2}`_"
+alert_text_args:
+- HOSTNAME
+- "@timestamp"
+- message

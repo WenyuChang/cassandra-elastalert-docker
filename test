@@ -22,3 +22,6 @@ export ELASTALERT_SUPERVISOR_CONF=${CONFIG_DIR}/elastalert_supervisord.conf
 export ELASTICSEARCH_HOST=data-elasticsearch-logging-staging.service.sntc01.ecsops.com
 # Port on above Elasticsearch host. Set in default Elasticsearch configuration file.
 export ELASTICSEARCH_PORT=9200
+
+
+docker run -it -e ELASTICSEARCH_CASSANDRA_INDEX="staging-cassandra-*" -e ELASTICSEARCH_HOST=data-elasticsearch-logging-staging.service.sntc01.ecsops.com wenyu/cassandra-elastalert
