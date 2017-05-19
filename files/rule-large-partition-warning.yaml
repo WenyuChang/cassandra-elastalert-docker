@@ -46,6 +46,7 @@ alert:
 - "slack":
     slack_webhook_url: "https://hooks.slack.com/services/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"
     slack_msg_color: warning
+    slack_username_override: Cassandra Large Partition Alerts
 alert_text_type: alert_text_only
 alert_text: "_*Cassandra just compacted a large partition.*_\n_Host:_ _`{0}`_\n_Timestamp:_ _`{1}`_\n_Level:_ _`{2}`_\n_Message:_ _`{3}`_"
 alert_text_args:

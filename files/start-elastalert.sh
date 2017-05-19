@@ -85,7 +85,7 @@ sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY
 sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/exception.yaml; \
 
 # Set the slack webhook url.
-sed -i -e"s|^slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/exception.yaml; \
+sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/exception.yaml; \
 
 echo "Starting Elastalert..."
 exec supervisord -c ${ELASTALERT_SUPERVISOR_CONF} -n
