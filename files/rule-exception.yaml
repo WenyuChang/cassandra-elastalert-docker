@@ -30,7 +30,7 @@ timeframe:
 
 # This option allows you to ignore repeating alerts for a period of time.
 realert:
-  minutes: 0
+  minutes: 5
 
 # (Required)
 # A list of Elasticsearch filters used for find events
