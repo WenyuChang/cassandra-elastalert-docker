@@ -38,7 +38,7 @@ realert:
 # For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
 - query_string:
-    query: '("Writing large partition" OR "Compacting large partition") AND (level: WARN OR level: ERROR)'
+    query: '("Writing large partition" OR "Compacting large partition") AND level: ERROR'
 
 # (Required)
 # The alert is use when a match is found
