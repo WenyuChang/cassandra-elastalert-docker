@@ -54,7 +54,8 @@ WORKDIR /opt
 # Copy the script used to launch the Elastalert when a container is started.
 COPY ./files/start-elastalert.sh /opt/
 COPY ./files/elastalert_config.conf ${ELASTALERT_CONFIG}
-COPY ./files/rule-large-partition.yaml ${RULES_DIRECTORY}/large-partition.yaml
+COPY ./files/rule-large-partition-error.yaml ${RULES_DIRECTORY}/large-partition-error.yaml
+COPY ./files/rule-large-partition-warning.yaml ${RULES_DIRECTORY}/large-partition-warning.yaml
 COPY ./files/rule-exception.yaml ${RULES_DIRECTORY}/exception.yaml
 
 # Install software required for Elastalert and NTP for time synchronization.
@@ -116,16 +117,20 @@ RUN pip uninstall twilio --yes; \
 
 # Elastalert large partition rule configuration:
     # Set the Elasticsearch host that Elastalert is to query.
-    sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/large-partition.yaml; \
+    sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
+    sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
 
     # Set the port used by Elasticsearch at the above address.
-    sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/large-partition.yaml; \
+    sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
+    sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
 
     # Set the index name by Elasticsearch.
-    sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/large-partition.yaml; \
+    sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
+    sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
 
     # Set the slack webhook url.
-    sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/large-partition.yaml; \
+    sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
+    sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
 
 # Elastalert exception rule configuration:
     # Set the Elasticsearch host that Elastalert is to query.
