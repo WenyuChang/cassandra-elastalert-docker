@@ -52,3 +52,4 @@ alert_text_args:
 - HOSTNAME
 - "@timestamp"
 - message
+- stack_trace
