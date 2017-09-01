@@ -87,5 +87,18 @@ sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RU
 # Set the slack webhook url.
 sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/exception.yaml; \
 
+# Elastalert JVM crash rule configuration:
+# Set the Elasticsearch host that Elastalert is to query.
+sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
+
+# Set the port used by Elasticsearch at the above address.
+sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
+
+# Set the index name by Elasticsearch.
+sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
+
+# Set the slack webhook url.
+sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
+
 echo "Starting Elastalert..."
 exec supervisord -c ${ELASTALERT_SUPERVISOR_CONF} -n

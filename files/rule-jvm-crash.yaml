@@ -6,7 +6,7 @@ es_port: 9200
 
 # (Required)
 # Rule name, must be unique
-name: Cassandra Exception
+name: Cassandra JVM Crash Monitor
 
 # (Required)
 # Type of alert.
@@ -28,9 +28,6 @@ num_events: 1
 timeframe:
   minutes: 1
 
-# This option allows you to ignore repeating alerts for a period of time.
-realert:
-  minutes: 5
 
 # (Required)
 # A list of Elasticsearch filters used for find events
@@ -38,7 +35,7 @@ realert:
 # For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
 filter:
 - query_string:
-    query: 'NOT ("large partition") AND NOT ("JVM Crash") AND level:ERROR'
+    query: '"JVM Crash" AND level:ERROR'
 
 # (Required)
 # The alert is use when a match is found
@@ -47,9 +44,8 @@ alert:
     slack_webhook_url: "https://hooks.slack.com/services/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"
     slack_username_override: Cassandra Exception Alerts
 alert_text_type: alert_text_only
-alert_text: "_*Cassandra just had an exception.*_\n_Host:_ _`{0}`_\n_Timestamp:_ _`{1}`_\n_Message:_ _`{2}`_\n_StackTrace:_ _```{3}```_"
+alert_text: "_*JVM Crash Happened*_\n_Host:_ _`{0}`_\n_Timestamp:_ _`{1}`_\n_Message:_ _`{2}`_"
 alert_text_args:
 - HOSTNAME
 - "@timestamp"
 - message
-- stack_trace
