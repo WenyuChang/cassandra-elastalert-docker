@@ -1,0 +1,50 @@
+# Alert when the rate of events exceeds a threshold
+
+es_host: elasticsearch.example.com
+es_port: 9200
+
+
+# (Required)
+# Rule name, must be unique
+name: Cassandra Slow Queries
+
+# (Required)
+# Type of alert.
+# the frequency rule type alerts when num_events events occur with timeframe time
+type: frequency
+
+# (Required)
+# Index to search, wildcard supported
+index: cassandra-*
+
+use_strftime_index: true
+
+# (Required, frequency specific)
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 1
+
+# (Required, frequency specific)
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+  minutes: 1
+
+# (Required)
+# A list of Elasticsearch filters used for find events
+# These filters are joined with AND and nested in a filtered query
+# For more info: http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/query-dsl.html
+filter:
+- query_string:
+    query: '(".* operations were slow in the last .*" OR ".* operations timed out in the last .*") AND level:DEBUG AND logger_name:*MonitoringTask'
+
+# (Required)
+# The alert is use when a match is found
+alert:
+- "slack":
+    slack_webhook_url: "https://hooks.slack.com/services/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"
+    slack_username_override: Cassandra Slow Queries Alerts
+alert_text_type: alert_text_only
+alert_text: "_*There were slow queries.*_\n_Host:_ _`{0}`_\n_Timestamp:_ _`{1}`_\n_Message:_ _`{2}`_"
+alert_text_args:
+- HOSTNAME
+- "@timestamp"
+- message

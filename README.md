@@ -24,3 +24,4 @@ In addition you may want to add the SYS_NICE capability, in order for ntpd to be
 - **Cassandra large partition logs** - "Compacting large partition" in Cassandra2x and "Writing large partition" in Cassandra3x
 - **Cassandra Exception logs** - Any exception related error
 - **Cassandra JVM Crash Monitor** - Any JVM crash related error
+- **Cassandra Slow Query Monitor** - Any slow query related log
