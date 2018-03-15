@@ -4,7 +4,7 @@ set -e
 
 # Set the timezone.
 if [ "$SET_CONTAINER_TIMEZONE" = "true" ]; then
-	setup-timezone -z ${CONTAINER_TIMEZONE} && \
+	setup-timezone -z ${CONTAINER_TIMEZONE}
 	echo "Container timezone set to: $CONTAINER_TIMEZONE"
 else
 	echo "Container timezone not modified"
@@ -24,6 +24,7 @@ do
 	sleep 1
 done
 rm -f garbage_file
+echo "ElasticSearch is connected..."
 sleep 5
 
 # Check if the Elastalert index exists in Elasticsearch and create it if it does not.
@@ -39,66 +40,38 @@ rm -f garbage_file
 
 # Elastalert configuration:
 # Set the rule directory in the Elastalert config file to external rules directory.
-sed -i -e"s|^rules_folder: [[:print:]]*|rules_folder: ${RULES_DIRECTORY}|g" ${ELASTALERT_CONFIG}; \
-
+sed -i -e"s|^rules_folder: [[:print:]]*|rules_folder: ${RULES_DIRECTORY}|g" ${ELASTALERT_CONFIG}
 # Set the Elasticsearch host that Elastalert is to query.
-sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${ELASTALERT_CONFIG}; \
-
+sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${ELASTALERT_CONFIG}
 # Set the port used by Elasticsearch at the above address.
-sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${ELASTALERT_CONFIG}; \
+sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${ELASTALERT_CONFIG}
 
 # Elastalert Supervisor configuration:
 # Redirect Supervisor log output to a file in the designated logs directory.
-sed -i -e"s|logfile=.*log|logfile=${LOG_DIR}/elastalert_supervisord.log|g" ${ELASTALERT_SUPERVISOR_CONF}; \
-
+sed -i -e"s|logfile=.*log|logfile=${LOG_DIR}/elastalert_supervisord.log|g" ${ELASTALERT_SUPERVISOR_CONF}
 # Redirect Supervisor stderr output to a file in the designated logs directory.
-sed -i -e"s|stderr_logfile=.*log|stderr_logfile=${LOG_DIR}/elastalert_stderr.log|g" ${ELASTALERT_SUPERVISOR_CONF}; \
-
+sed -i -e"s|stderr_logfile=.*log|stderr_logfile=${LOG_DIR}/elastalert_stderr.log|g" ${ELASTALERT_SUPERVISOR_CONF}
 # Modify the start-command.
-sed -i -e"s|python elastalert.py|python -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}; \
+sed -i -e"s|python elastalert.py|python -m elastalert.elastalert --config ${ELASTALERT_CONFIG}|g" ${ELASTALERT_SUPERVISOR_CONF}
 
-# Elastalert large partition rule configuration:
-# Set the Elasticsearch host that Elastalert is to query.
-sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
-sed -i -e"s|es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
 
-# Set the port used by Elasticsearch at the above address.
-sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
-sed -i -e"s|es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
+for rule in \
+	large-partition-error \
+	large-partition-warning \
+	exception \
+	jvm-crash \
+	slow-query \
+; do
+	# Set the Elasticsearch host that Elastalert is to query.
+	sed -i -e"s|^es_host: [[:print:]]*|es_host: '${ELASTICSEARCH_HOST}'|g" ${RULES_DIRECTORY}/${rule}.yaml
+	# Set the port used by Elasticsearch at the above address.
+	sed -i -e"s|^es_port: [0-9]*|es_port: '${ELASTICSEARCH_PORT}'|g" ${RULES_DIRECTORY}/${rule}.yaml
+	# Set the index name by Elasticsearch.
+	sed -i -e"s|^index: [[:print:]]*|index: '${ELASTICSEARCH_CASSANDRA_INDEX}'|g" ${RULES_DIRECTORY}/${rule}.yaml
+	# Set the slack webhook url.
+	sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: '${SLACK_WEBHOOK_URL}'|g" ${RULES_DIRECTORY}/${rule}.yaml
+done
 
-# Set the index name by Elasticsearch.
-sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
-sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
-
-# Set the slack webhook url.
-sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/large-partition-error.yaml; \
-sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/large-partition-warning.yaml; \
-
-# Elastalert exception rule configuration:
-# Set the Elasticsearch host that Elastalert is to query.
-sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/exception.yaml; \
-
-# Set the port used by Elasticsearch at the above address.
-sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/exception.yaml; \
-
-# Set the index name by Elasticsearch.
-sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/exception.yaml; \
-
-# Set the slack webhook url.
-sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/exception.yaml; \
-
-# Elastalert JVM crash rule configuration:
-# Set the Elasticsearch host that Elastalert is to query.
-sed -i -e"s|^es_host: [[:print:]]*|es_host: ${ELASTICSEARCH_HOST}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
-
-# Set the port used by Elasticsearch at the above address.
-sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
-
-# Set the index name by Elasticsearch.
-sed -i -e"s|^index: [[:print:]]*|index: ${ELASTICSEARCH_CASSANDRA_INDEX}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
-
-# Set the slack webhook url.
-sed -i -e"s|slack_webhook_url: [[:print:]]*|slack_webhook_url: ${SLACK_WEBHOOK_URL}|g" ${RULES_DIRECTORY}/jvm-crash.yaml; \
 
 echo "Starting Elastalert..."
 exec supervisord -c ${ELASTALERT_SUPERVISOR_CONF} -n
