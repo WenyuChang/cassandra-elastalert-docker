@@ -40,15 +40,15 @@ RUN mkdir -p ${CONFIG_DIR}; \
     mkdir -p /var/empty;
 
 # Install software required for Elastalert and NTP for time synchronization.
-#RUN yum install -y unzip wget ntp.x86_64 openssl-devel.x86_64 openssl.x86_64 \
-#                   libffi.x86_64 libffi-devel.x86_64 python-devel.x86_64 gcc.x86_64 \
-#                   compat-gcc-44.x86_64 libgcc.x86_64 tzdata.noarch; \
-#    rm -rf /var/cache/yum/*;
+RUN yum install -y unzip wget ntp.x86_64 openssl-devel.x86_64 openssl.x86_64 \
+                   libffi.x86_64 libffi-devel.x86_64 python-devel.x86_64 gcc.x86_64 \
+                   compat-gcc-44.x86_64 libgcc.x86_64 tzdata.noarch; \
+    rm -rf /var/cache/yum/*;
 
 # Install pip - required for installation of Elastalert.
-#RUN wget https://bootstrap.pypa.io/get-pip.py; \
-#    python get-pip.py; \
-#    rm -rf get-pip.py;
+RUN wget https://bootstrap.pypa.io/get-pip.py; \
+    python get-pip.py; \
+    rm -rf get-pip.py;
 
 # Download and unpack Elastalert.
 RUN wget -O elastalert.zip ${ELASTALERT_URL}; \
