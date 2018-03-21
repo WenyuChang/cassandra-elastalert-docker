@@ -65,7 +65,7 @@ for rule in \
 	# Set the Elasticsearch host that Elastalert is to query.
 	sed -i -e"s|^es_host: [[:print:]]*|es_host: '${ELASTICSEARCH_HOST}'|g" ${RULES_DIRECTORY}/${rule}.yaml
 	# Set the port used by Elasticsearch at the above address.
-	sed -i -e"s|^es_port: [0-9]*|es_port: '${ELASTICSEARCH_PORT}'|g" ${RULES_DIRECTORY}/${rule}.yaml
+	sed -i -e"s|^es_port: [0-9]*|es_port: ${ELASTICSEARCH_PORT}|g" ${RULES_DIRECTORY}/${rule}.yaml
 	# Set the index name by Elasticsearch.
 	sed -i -e"s|^index: [[:print:]]*|index: '${ELASTICSEARCH_CASSANDRA_INDEX}'|g" ${RULES_DIRECTORY}/${rule}.yaml
 	# Set the slack webhook url.
